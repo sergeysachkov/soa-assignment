@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<xsd:schema version="1.0"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.TennisSlams.com"
+            xmlns="http://www.TennisSlams.com"
+            elementFormDefault="qualified">
+
+    <xsd:simpleType name="name">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[A-Z][a-z]*"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:element name="winner">
+        <xsd:complexType>
+            <xsd:simpleContent>
+                <xsd:extension base="name">
+                    <xsd:attribute type="xsd:boolean" name="firstSlamWin"/>
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="runnerUp">
+        <xsd:complexType>
+            <xsd:simpleContent>
+                <xsd:extension base="name">
+                    <xsd:attribute type="xsd:boolean" name="firstSlamFinal"/>
+                </xsd:extension>
+            </xsd:simpleContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="semiFinalist" type="name"/>
+
+    <xsd:attributeGroup name="slam_name">
+        <xsd:attribute name="name" use="required">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="Australia"/>
+                    <xsd:enumeration value="French Open"/>
+                    <xsd:enumeration value="Wimbledon"/>
+                    <xsd:enumeration value="US Open"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="year" type="xsd:gYear"/>
+    </xsd:attributeGroup>
+    <xsd:element name="surface">
+    <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Rebound Ace"/>
+            <xsd:enumeration value="Clay"/>
+            <xsd:enumeration value="Grass"/>
+            <xsd:enumeration value="Hard Court"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    </xsd:element>
+    <xsd:element name="score">
+    <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern  value="\d{1}-\d{2}-\d{1}"/>
+            <xsd:pattern  value="\d{1}-\d{2}-\d{2}-\d{1}"/>
+            <xsd:pattern  value="\d{1}-\d{2}-\d{2}-\d{2}-\d{2}-\d{1}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    </xsd:element>
+
+    <xsd:element name="Slams">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="slam" minOccurs="1" maxOccurs="unbounded"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="slam">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="winner"/>
+                <xsd:element ref="runnerUp"/>
+                <xsd:element ref="score"/>
+                <xsd:element ref="surface"/>
+                <xsd:element ref="semiFinalist" minOccurs="2" maxOccurs="2"/>
+            </xsd:sequence>
+            <xsd:attributeGroup ref="slam_name"/>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
+
+
+
+
