@@ -3,7 +3,9 @@ package edu.ait.assignment.dao;
 import edu.ait.assignment.models.Order;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class OrderDao {
@@ -42,11 +44,10 @@ public class OrderDao {
         return res.next();
     }
 
-    public String createOrder(Order order) throws SQLException {
+    public String createOrder(String id, Order order) throws SQLException {
         Connection con = getConnection();
-        UUID id = UUID.randomUUID();
         PreparedStatement statement = con.prepareStatement("INSERT INTO order_tbl(id, order_date, items) VALUES (?, ?, ?)");
-        statement.setString(1, id.toString());
+        statement.setString(1, id);
         statement.setDate(2, new java.sql.Date(order.getDate().getTime()));
         StringBuffer str = new StringBuffer();
         int index = 0;
@@ -59,7 +60,7 @@ public class OrderDao {
         }
         statement.setString(3, str.toString());
         statement.executeUpdate();
-        return id.toString();
+        return id;
     }
 
     public String updateOrder(String id, Order order) throws SQLException {
@@ -97,11 +98,32 @@ public class OrderDao {
         }
     }
 
+    public List<Order> getAllOrders() throws SQLException {
+        Connection con = getConnection();
+        PreparedStatement statement = con.prepareStatement("select * from order_tbl");
+        ResultSet res =  statement.executeQuery();
+        List<Order> orders = new ArrayList<>();
+        while (res.next()){
+            Order o =  new Order();
+            o.setId(res.getString(1));
+            o.setDate(res.getDate(2));
+            o.setItems(Arrays.asList(res.getString(3).split(",")));
+            orders.add(o);
+
+        }return orders;
+    }
+
     public String deleteOrder(String orderId) throws SQLException {
         Connection con = getConnection();
         PreparedStatement statement = con.prepareStatement("DELETE from order_tbl where id = ?");
         statement.setString(1, orderId);
         statement.executeUpdate();
         return orderId;
+    }
+
+    public void deleteAllOrders() throws SQLException {
+        Connection con = getConnection();
+        PreparedStatement statement = con.prepareStatement("DELETE from order_tbl");
+        statement.executeUpdate();
     }
 }
