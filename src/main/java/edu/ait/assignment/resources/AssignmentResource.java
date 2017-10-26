@@ -7,7 +7,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -71,14 +70,18 @@ public class AssignmentResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateOrder(@PathParam("id") String id, Order order) throws SQLException, URISyntaxException {
+        if(order == null){
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity("Order cannot be empty").build();
+        }
         try {
+            order.setId(id);
             if (orderDao.orderExists(id)) {
-                orderDao.updateOrder(id, order);
+                orderDao.updateOrder(order);
             } else {
-                orderDao.createOrder(id, order);
+                orderDao.createOrder(order);
             }
-            return Response.status(303).header("location", String.format("%s%s/%s", context.getBaseUri(), "orders", id)).allow("GET").entity(id).build();
-            //return Response.seeOther(URI.create(String.format("%s%s/%s", context.getBaseUri(), "orders", id))).build();
+
+            return Response.seeOther(URI.create(String.format("%s%s/%s", context.getBaseUri(), "orders", id))).entity(order).build();
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         }

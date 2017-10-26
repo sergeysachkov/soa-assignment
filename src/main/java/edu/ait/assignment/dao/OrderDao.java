@@ -44,10 +44,10 @@ public class OrderDao {
         return res.next();
     }
 
-    public String createOrder(String id, Order order) throws SQLException {
+    public String createOrder(Order order) throws SQLException {
         Connection con = getConnection();
         PreparedStatement statement = con.prepareStatement("INSERT INTO order_tbl(id, order_date, items) VALUES (?, ?, ?)");
-        statement.setString(1, id);
+        statement.setString(1, order.getId());
         statement.setDate(2, new java.sql.Date(order.getDate().getTime()));
         StringBuffer str = new StringBuffer();
         int index = 0;
@@ -60,10 +60,10 @@ public class OrderDao {
         }
         statement.setString(3, str.toString());
         statement.executeUpdate();
-        return id;
+        return order.getId();
     }
 
-    public String updateOrder(String id, Order order) throws SQLException {
+    public String updateOrder(Order order) throws SQLException {
             Connection con = getConnection();
             PreparedStatement statement = con.prepareStatement("UPDATE order_tbl set order_date = ?, items = ? where id = ?");
             statement.setDate(1, new java.sql.Date(order.getDate().getTime()));
@@ -77,9 +77,9 @@ public class OrderDao {
                 index++;
             }
             statement.setString(2, str.toString());
-            statement.setString(3, id);
+            statement.setString(3, order.getId());
         statement.executeUpdate();
-            return id;
+            return order.getId();
     }
 
     public Order getOrder(String orderId) throws SQLException {

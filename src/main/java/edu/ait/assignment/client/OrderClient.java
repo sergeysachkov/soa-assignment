@@ -2,12 +2,10 @@ package edu.ait.assignment.client;
 
 import edu.ait.assignment.models.Order;
 import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.client.ClientResponse;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -50,14 +48,9 @@ public class OrderClient {
                 items.add("2");
                 items.add("3");
                 order.setItems(items);
-                response = client.target(response.getHeaderString("location")).property(ClientProperties.FOLLOW_REDIRECTS, Boolean.FALSE).path("").
+                response = client.target(response.getHeaderString("location")).property(ClientProperties.FOLLOW_REDIRECTS, Boolean.FALSE).
                         request(MediaType.APPLICATION_JSON).put(Entity.entity(order, MediaType.APPLICATION_JSON));
-
-                System.out.println(response.getHeaderString(HttpHeaders.LOCATION));
-                System.out.println(response.getHeaderString(HttpHeaders.LOCATION));
-                Order o = new Order();
-                o.setId(response.readEntity(String.class));
-                return o;
+                return response.readEntity(Order.class);
             }catch (Exception e){
                 e.printStackTrace();
                 return null;
@@ -67,9 +60,6 @@ public class OrderClient {
     private String updateOrderCall(Order order){
         try {
             Client client = ClientBuilder.newClient();
-
-
-
             return client.target("http://localhost:8080/rest/orders/pending").path(order.getId()).
                     request(MediaType.APPLICATION_JSON).put(Entity.entity(order, MediaType.APPLICATION_JSON)).readEntity(String.class);
         }catch (Exception e){
