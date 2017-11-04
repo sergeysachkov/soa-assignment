@@ -110,7 +110,8 @@ public class OrderDao {
             o.setItems(Arrays.asList(res.getString(3).split(",")));
             orders.add(o);
 
-        }return orders;
+        }
+        return orders;
     }
 
     public String deleteOrder(String orderId) throws SQLException {

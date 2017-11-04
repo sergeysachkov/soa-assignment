@@ -80,7 +80,6 @@ public class AssignmentResource {
             } else {
                 orderDao.createOrder(order);
             }
-
             return Response.seeOther(URI.create(String.format("%s%s/%s", context.getBaseUri(), "orders", id))).entity(order).build();
         } catch (Exception e) {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
