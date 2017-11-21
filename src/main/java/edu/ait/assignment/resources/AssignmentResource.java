@@ -8,6 +8,8 @@ import javax.ws.rs.core.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 @Path("/orders")
@@ -15,6 +17,13 @@ public class AssignmentResource {
     private OrderDao orderDao = new OrderDao();
     @Context
     private UriInfo context;
+
+    @HEAD
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getHeadOrder(@PathParam("id") String id) throws SQLException {
+            return Response.noContent().status(Response.Status.NO_CONTENT).build();
+    }
 
     @GET
     @Path("/{id}")
@@ -27,6 +36,31 @@ public class AssignmentResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         }
 
+    }
+
+    @OPTIONS
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOptionsOrder() throws SQLException {
+        Set<String> api = new TreeSet<>();
+        api.add("GET");
+        api.add("DELETE");
+        return Response.noContent().allow(api).status(Response.Status.NO_CONTENT).build();
+    }
+
+    @HEAD
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getHeadOrders() throws SQLException {
+        return Response.noContent().status(Response.Status.NO_CONTENT).build();
+    }
+
+    @OPTIONS
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOptionsOrders() throws SQLException {
+        Set<String> api = new TreeSet<>();
+        api.add("GET");
+        api.add("DELETE");
+        return Response.noContent().allow(api).status(Response.Status.NO_CONTENT).build();
     }
 
     @GET
