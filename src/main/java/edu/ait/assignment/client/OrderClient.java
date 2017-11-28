@@ -15,6 +15,8 @@ import java.util.List;
 
 public class OrderClient {
 
+    private static String REST_URI = "http://localhost:8080/rest/orders/";
+
     public static void main(String[] args) {
         OrderClient client = new OrderClient();
         Order newOrder = new Order();
@@ -24,17 +26,22 @@ public class OrderClient {
         items.add("2");
         items.add("3");
         newOrder.setItems(items);
-
+        //Create order using POST-PUT technique described in article
         String id = client.createOrderCall(newOrder).getId();
+        //Get created order
         Order order = client.getOrderCall(id);
         System.out.println("Order create: " + order);
         order.setDate(new Date(System.currentTimeMillis() + 3600 * 1000));
+        //Update time of the order
         Order updatedOrder = client.updateOrderCall(order);
         System.out.println("Order update: " + updatedOrder);
+        //get Updated order
         order = client.getOrderCall(id);
         System.out.println("Get Order updated with GET method: " + order);
+        //delete Order
         id = client.deleteOrderCall(id);
         System.out.println("Order removed: " + id);
+        //Check that order is deleted
         order = client.getOrderCall(id);
         System.out.println("Order should be null, real value is : " + order);
 
@@ -62,23 +69,31 @@ public class OrderClient {
         items.add("32");
         items.add("33");
         newOrder3.setItems(items);
+        //create 3 orders
         client.createOrderCall(newOrder1);
         client.createOrderCall(newOrder2);
         client.createOrderCall(newOrder3);
 
+        //get all arders
         List<Order> orders = client.getAllOrdersCall();
         System.out.println("All orders: " + orders);
 
+        //delete all orders
         client.deleteAllOrdersCall();
+        //check that all orders deleted
         orders = client.getAllOrdersCall();
         System.out.println("All orders after deletion: " + orders);
     }
 
 
+    /**
+     * Get request for all orders
+     * @return
+     */
     private List<Order> getAllOrdersCall() {
         try {
             Client client = ClientBuilder.newClient();
-            return client.target("http://localhost:8080/rest/orders/").
+            return client.target(REST_URI).
                     request(MediaType.APPLICATION_JSON).get().readEntity(List.class);
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,22 +101,30 @@ public class OrderClient {
         }
     }
 
+    /**
+     * Delete request for all orders
+     */
     private void deleteAllOrdersCall() {
         try {
             Client client = ClientBuilder.newClient();
-            client.target("http://localhost:8080/rest/orders/").
+            client.target(REST_URI).
                     request(MediaType.APPLICATION_JSON).delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Method uses post to receive unique link via POST request and then uses PUT to create or Update object
+     * @param order
+     * @return
+     */
     private Order createOrderCall(Order order) {
         try {
             Client client = ClientBuilder.newClient();
 
             Response response
-                    = client.target("http://localhost:8080/rest/orders/pending").
+                    = client.target(REST_URI +"pending").
                     request(MediaType.APPLICATION_JSON).post(Entity.entity("", MediaType.APPLICATION_JSON));
             String id = response.readEntity(String.class);
             System.out.println(response.getHeaderString(HttpHeaders.LOCATION));
@@ -117,10 +140,15 @@ public class OrderClient {
 
     }
 
+    /**
+     * Method Uses PUT to update Order
+     * @param order
+     * @return
+     */
     private Order updateOrderCall(Order order) {
         try {
             Client client = ClientBuilder.newClient();
-            return client.target("http://localhost:8080/rest/orders/pending").path(order.getId()).
+            return client.target(REST_URI + "pending").path(order.getId()).
                     property(ClientProperties.FOLLOW_REDIRECTS, Boolean.FALSE).
                     request(MediaType.APPLICATION_JSON).put(Entity.entity(order, MediaType.APPLICATION_JSON)).readEntity(Order.class);
         } catch (Exception e) {
@@ -130,15 +158,25 @@ public class OrderClient {
 
     }
 
+    /**
+     * Get request for specific order
+     * @param id
+     * @return
+     */
     private Order getOrderCall(String id) {
         Client client = ClientBuilder.newClient();
-        return client.target("http://localhost:8080/rest/orders/").path(id).
+        return client.target(REST_URI).path(id).
                 request(MediaType.APPLICATION_JSON).get(Order.class);
     }
 
+    /***
+     * delete request for specific order
+     * @param id
+     * @return
+     */
     private String deleteOrderCall(String id) {
         Client client = ClientBuilder.newClient();
-        return client.target("http://localhost:8080/rest/orders/").path(id).
+        return client.target(REST_URI).path(id).
                 request(MediaType.APPLICATION_JSON).delete(String.class);
     }
 }
